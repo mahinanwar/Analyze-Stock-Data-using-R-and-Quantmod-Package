@@ -1,0 +1,61 @@
+---
+title: "Stock Analytics"
+author: "Mahin Anwar"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+#Load Libraries
+library(tidyverse)
+library(TTR)
+library(quantmod)
+library(PerformanceAnalytics)
+library(RColorBrewer)
+library(tseries)
+library(lubridate)
+library(Quandl)
+
+```
+
+```{r}
+#Capture data for a stock
+
+#Microsoft Stock
+MSFT <- getSymbols('MSFT', auto.assign = FALSE)
+head(MSFT)
+dim(MSFT)
+
+#Tesla Stock
+tsla <- getSymbols('TSLA', auto.assign = FALSE)
+tail(tsla)
+```
+```{r}
+options(scipen = 9999)
+
+#Create a Daily Return and Chart the data dfor a single stock
+
+tail(dailyReturn(tsla$TSLA.Adjusted))
+plot(dailyReturn(tsla$TSLA.Adjusted), main = 'DAILY RETURNS')
+
+```
+```{R}
+#Comparing Multiple Stocks
+
+msft_ad <- Ad(MSFT)
+msft_daily <- dailyReturn(msft_ad)
+
+#Starbucks Stock
+sbux <- getSymbols('SBUX', auto.assign = FALSE)
+sbux_daily <- dailyReturn(Ad(sbux))
+
+#Combine both stocks
+comb <- merge(msft_daily, sbux_daily)
+
+#Plot
+charts.PerformanceSummary(comb, main = 'Microsoft vs Starbucks')
+
+#Sharp Ratio
+table.AnnualizedReturns(comb, scale = 252, Rf = 0.004/252)
+``` 
